@@ -63,7 +63,7 @@ public:
 				}
 			}
 		}
-		r.move(1, 0); // move green square to rightby 1 pixel
+		r.move(1, 0); // move green square to right by 1 pixel
 		procs["start"].clear(); // clear screen
 		procs["start"].draw(s); // draw on screen anything you want
 		procs["start"].draw(r);
@@ -71,7 +71,7 @@ public:
 	}
 	
 };
-class Level_select :public Process // for more detailed comments view previous class comments ^
+class Level_select :public Process // for more detailed comments view previous class comments
 {
 public:
 	Sprite s;
