@@ -11,9 +11,7 @@
 #include <atomic>
 #include <deque>
 #include <any>
-#include "Procs.hpp"
-#include "Proc.hpp"
-#include "Process.hpp"
+#include "Processing.hpp"
 #include "Global.hpp"
 using namespace sf;
 class Start_menu :public Process
