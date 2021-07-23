@@ -28,25 +28,70 @@ protected:
 	shared_ptr<Clock> timer_ptr{ nullptr };
 	shared_ptr<Anim_type> type_ptr; // animation type pointer
 public:
-	Anim(shared_ptr<Anim_type>, Time, Time off = seconds(0)); // constructor, args: animation type pointer, duration, starting offset
-	void launch();
-	virtual Sprite modify(Sprite); // modifies and returns sprite, args: sprite which will be modified 
-	bool is_ended(); // if animation ended returns true, else returns false
-	bool is_started(); // if animation started returns true, else returns false
-	Time get_duration(); // returns duration of animation
+
+	Anim(shared_ptr<Anim_type> t_p, Time dur, Time off = seconds(0)) : // constructor, args: animation type pointer, duration, starting offset
+		duration(dur),
+		offset(off),
+		type_ptr(t_p)
+	{
+		if (duration == Time::Zero) duration = microseconds(1); // duration of animation cannot be zero
+	} 
+
+	void launch()
+	{
+		timer_ptr = shared_ptr<Clock>(new Clock());
+	}
+
+	Sprite modify(Sprite spr) // modifies and returns sprite, args: sprite which will be modified 
+	{
+		if (!timer_ptr.get()) return spr;
+		if (!is_started()) return type_ptr->modify(spr, seconds(0), duration);
+		if (is_ended()) return type_ptr->modify(spr, duration, duration);
+		Time elapsed = timer_ptr->getElapsedTime() - offset;
+		return type_ptr->modify(spr, elapsed, duration);
+	} 
+
+	bool is_ended() // if animation ended returns true, else returns false
+	{
+		if (!timer_ptr.get()) return 0;
+		return timer_ptr->getElapsedTime() > duration + offset;
+	}
+	
+	bool is_started() // if animation started returns true, else returns false
+	{
+		if (!timer_ptr.get()) return 0;
+		return timer_ptr->getElapsedTime() > offset;
+	} 
+
+	Time get_duration() // returns duration of animation
+	{
+		return duration;
+	}
 
 };
 class Run_anim : public Anim // base class for animations, which are used while process is running
 {
 public:
-	Run_anim(shared_ptr<Run_anim_type>, Time, Time off = seconds(0)); // constructor, args: animation type pointer, duration, starting offset
+
+	Run_anim(shared_ptr<Run_anim_type> t_p, Time dur, Time off = seconds(0)) : // constructor, args: animation type pointer, duration, starting offset
+		Anim(shared_ptr<Anim_type>(t_p), dur, off)
+	{
+
+	}
+
 protected:
 
 };
 class Stop_anim : public Anim // base class for animations, which are used while process is stopping
 {
 public:
-	Stop_anim(shared_ptr<Stop_anim_type>, Time, Time off = seconds(0)); // constructor, args: animation type pointer, duration, starting offset
+
+	Stop_anim(shared_ptr<Stop_anim_type> t_p, Time dur, Time off = seconds(0)) : // constructor, args: animation type pointer, duration, starting offset
+		Anim(shared_ptr<Anim_type>(t_p), dur, off)
+	{
+
+	} 
+
 protected:
 };
 
